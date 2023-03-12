@@ -7,6 +7,7 @@ const CartPage = () => {
   const [couponCode, setCouponCode] = useState(null);
   const [popUp, setPopUp] = useState(null);
   const [disc, setDisc] = useState(null);
+  const [done, setDone] = useState(false);
 
   const couponCurrValue = useRef();
 
@@ -21,7 +22,7 @@ const CartPage = () => {
         "http://localhost:3000/copoun/640d49ebf5e392eb2368b04f/verify",
         {
           coup_id: couponCode,
-          prod: "SKU",
+          prod: "cart",
         },
         {
           headers: {
@@ -32,6 +33,7 @@ const CartPage = () => {
       .then((response) => {
         if (response.status == 200) {
           setPopUp("success");
+          console.log(response.data);
           console.log(response.data.data[0].discount_number);
           setDisc(response.data.data[0].discount_number);
         }
@@ -62,6 +64,7 @@ const CartPage = () => {
           console.log("Money has been deducted :)");
         }
         console.log(response.data);
+        setDone(true);
       })
       .catch((error) => {
         console.error(error);
@@ -159,6 +162,12 @@ const CartPage = () => {
               Confirm Payment
             </button>
           </div>
+
+          {done ? (
+            <div className="bg-warning p-5 rounded-xl mt-10 text-black w-full mr-10">
+              Payment successful !!!
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
