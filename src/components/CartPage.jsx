@@ -36,6 +36,8 @@ const CartPage = () => {
           console.log(response.data);
           console.log(response.data.data[0].discount_number);
           setDisc(response.data.data[0].discount_number);
+        } else if (response.status == 404) {
+          setPopUp("failure");
         }
         console.log(response.data);
       })
