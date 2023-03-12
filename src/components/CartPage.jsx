@@ -6,6 +6,8 @@ const CartPage = () => {
   const { myState, setMyState } = useContext(MyContext);
   const [couponCode, setCouponCode] = useState(null);
   const [popUp, setPopUp] = useState(null);
+  const [disc, setDisc] = useState(null);
+
   const couponCurrValue = useRef();
 
   let sum = 0;
@@ -19,6 +21,7 @@ const CartPage = () => {
         "http://localhost:3000/copoun/640d49ebf5e392eb2368b04f/verify",
         {
           coup_id: couponCode,
+          prod: "SKU",
         },
         {
           headers: {
@@ -27,7 +30,11 @@ const CartPage = () => {
         }
       )
       .then((response) => {
-        if (response.status == 200) setPopUp("success");
+        if (response.status == 200) {
+          setPopUp("success");
+          console.log(response.data.data[0].discount_number);
+          setDisc(response.data.data[0].discount_number);
+        }
         console.log(response.data);
       })
       .catch((error) => {
@@ -40,7 +47,7 @@ const CartPage = () => {
     console.log(couponCode);
     axios
       .post(
-        "http://localhost:3000/copoun/640d49ebf5e392eb2368b04f/verify",
+        "http://localhost:3000/copoun/640d49ebf5e392eb2368b04f/confirm",
         {
           coup_id: couponCode,
         },
@@ -51,11 +58,12 @@ const CartPage = () => {
         }
       )
       .then((response) => {
-        if (response.status == 200) setPopUp("success");
+        if (response.status == 200) {
+          console.log("Money has been deducted :)");
+        }
         console.log(response.data);
       })
       .catch((error) => {
-        setPopUp("failure");
         console.error(error);
       });
   };
@@ -107,8 +115,8 @@ const CartPage = () => {
               Redeem coupon
             </button>
             {popUp == "success" ? (
-              <div className="bg-accent p-5 rounded-xl mt-10 text-white">
-                Something goes here !!!
+              <div className="bg-accent p-5 rounded-xl mt-10 text-white mr-10">
+                Coupon Verified !!!
               </div>
             ) : null}
             {popUp == "failure" ? (
@@ -133,7 +141,7 @@ const CartPage = () => {
             </p>
             {popUp == "success" ? (
               <p className="text-md mt-3 font-bo mr-10">
-                Price after Discount:
+                Price after Discount: {sum - disc}
               </p>
             ) : null}
 
