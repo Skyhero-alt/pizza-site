@@ -1,15 +1,64 @@
 import { useContext, useRef, useState } from "react";
 import { MyContext } from "../contexts/MyContext";
+import axios from "axios";
 
 const CartPage = () => {
   const { myState, setMyState } = useContext(MyContext);
   const [couponCode, setCouponCode] = useState(null);
+  const [popUp, setPopUp] = useState(null);
   const couponCurrValue = useRef();
 
   let sum = 0;
   const mySet = new Set(myState);
-  // myState.map((items) => mySet.add(items));
   const newArr = [...mySet];
+
+  let handleVerify = () => {
+    console.log(couponCode);
+    axios
+      .post(
+        "http://localhost:3000/copoun/640d49ebf5e392eb2368b04f/verify",
+        {
+          coup_id: couponCode,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        if (response.status == 200) setPopUp("success");
+        console.log(response.data);
+      })
+      .catch((error) => {
+        setPopUp("failure");
+        console.error(error);
+      });
+  };
+
+  let handleRedeem = () => {
+    console.log(couponCode);
+    axios
+      .post(
+        "http://localhost:3000/copoun/640d49ebf5e392eb2368b04f/verify",
+        {
+          coup_id: couponCode,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        if (response.status == 200) setPopUp("success");
+        console.log(response.data);
+      })
+      .catch((error) => {
+        setPopUp("failure");
+        console.error(error);
+      });
+  };
 
   return (
     <div>
@@ -47,21 +96,26 @@ const CartPage = () => {
               ref={couponCurrValue}
               placeholder="Type here"
               className="input mr-5 input-bordered input-error w-full max-w-xs"
+              onChange={(e) => setCouponCode(e.target.value)}
             />
             <button
               className="btn btn-warning"
               onClick={() => {
-                setCouponCode(couponCurrValue.current.value);
+                handleVerify();
               }}
             >
               Redeem coupon
             </button>
-            <div className="bg-accent p-5 rounded-xl mt-10 text-white">
-              Something goes here !!!
-            </div>
-            <div className="bg-error p-5 rounded-xl mt-10 text-white">
-              Coupon code is invalid !!!
-            </div>
+            {popUp == "success" ? (
+              <div className="bg-accent p-5 rounded-xl mt-10 text-white">
+                Something goes here !!!
+              </div>
+            ) : null}
+            {popUp == "failure" ? (
+              <div className="bg-error p-5 rounded-xl mt-10 text-white mr-10">
+                Coupon code is invalid !!!
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -77,9 +131,24 @@ const CartPage = () => {
                 })}{" "}
               {sum}
             </p>
+            {popUp == "success" ? (
+              <p className="text-md mt-3 font-bo mr-10">
+                Price after Discount:
+              </p>
+            ) : null}
 
             <button className="btn btn-active btn-primary mt-10">
               Proceed to pay
+            </button>
+          </div>
+
+          <div className="bg-base-200 rounded-lg p-3 mt-10">
+            <p className="text-md">(Did you add your coupon ?)</p>
+            <button
+              className="btn btn-active btn-accent m-5"
+              onClick={() => handleRedeem()}
+            >
+              Confirm Payment
             </button>
           </div>
         </div>
